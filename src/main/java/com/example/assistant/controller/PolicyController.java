@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 public class PolicyController {
 
 
-    @Value("${spring.ai.google.gemini.api-key}")
+    @Value("${GOOGLE_API_KEY:NOT_SET}")
     private String key;
 
     @GetMapping("/status")
