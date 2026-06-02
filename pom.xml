@@ -15,7 +15,7 @@
     <groupId>com.example</groupId>
     <artifactId>assistant</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <properties>
         <java.version>17</java.version>
