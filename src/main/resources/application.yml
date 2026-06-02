@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: ai-assistant
+  ai:
+    google:
+      genai:
+        api-key: http://localhost:11434
+        chat:
+          model: gemini-2.0-flash
+          options:
+            temperature: 0
+            top-p: 1
+            num-ctx: 2048
+      embedding:
+        model: text-embedding-004
+    vectorstore:
+      qdrant:
+        url: http://localhost:6333
+        initialize-schema: true
+        tenant: default
+        database: default
+        collection-name: SpringAiCollection
+
+server:
+  port: 8080
