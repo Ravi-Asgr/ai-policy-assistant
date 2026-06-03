@@ -21,7 +21,7 @@ public class IngestionController {
     @GetMapping("/internal")
     public String ingestInternalDocuments() {
         logger.info("Internal document ingestion invoked");
-        return this.ingestionService.ingestProjectDocument();
+        return this.ingestionService.loadPdfsFromResources();
     }
 
 }
