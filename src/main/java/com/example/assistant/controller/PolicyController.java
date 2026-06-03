@@ -9,10 +9,14 @@ public class PolicyController {
 
 
     @Value("${GOOGLE_API_KEY:NOT_SET}")
-    private String key;
+    private String geminiKey;
+    @Value("${QDRANT_HOST:NOT_SET}")
+    private String qdrantHost;
+    @Value("${QDRANT_API_KEY:NOT_SET}")
+    private String qdrantApikey;
 
     @GetMapping("/status")
     public String status() {
-        return "Service is running..."+ key;
+        return "Service is running... Gemini Key="+ geminiKey + " Qdrant Host="+ qdrantHost + " Qdrant Key="+ qdrantApikey;
     }
 }

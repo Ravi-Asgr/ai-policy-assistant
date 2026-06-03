@@ -25,6 +25,7 @@ public class IngestionService {
 
     public String ingestProjectDocument() {
         List<String> fileList = new ArrayList<>();
+        logger.info("Internal document ingestion folder {}", FOLDER_PATH);
         try {
             Files.walk(Paths.get(FOLDER_PATH))
                     .filter(p -> p.toString().endsWith(".pdf"))
