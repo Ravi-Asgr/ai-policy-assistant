@@ -11,15 +11,16 @@ spring:
             temperature: 0
             top-p: 1
             num-ctx: 2048
-      embedding:
-        model: text-embedding-004
+        embedding:
+          api-key: ${GOOGLE_API_KEY}
+          model: text-embedding-001
     vectorstore:
       qdrant:
-        url: http://localhost:6333
+        host: 571817a7-cb70-4a11-ac93-2908afbddf96.australia-southeast1-0.gcp.cloud.qdrant.io
+        port: 6334
+        api-key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6NDQ1YmU0NTItZTRhOC00ZmY2LWIzNDYtZTkzOTkxZDAxNWY2In0.ZUX1gplm31L_fDfpCRmlx7HuWgoPA3Mac11rjFnBS0Y
         initialize-schema: true
-        tenant: default
-        database: default
-        collection-name: SpringAiCollection
-
+        collection-name: policy_data
+        use-tls: true
 server:
   port: 8080

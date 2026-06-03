@@ -61,11 +61,15 @@
             <artifactId>spring-ai-starter-model-google-genai</artifactId>
         </dependency>
 
-        <!--<dependency>
+        <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-vector-store-qdrant</artifactId>
-        </dependency>-->
+        </dependency>
 
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-google-genai-embedding</artifactId>
+        </dependency>
 
         <!-- ✅ PDF Reader -->
         <dependency>
