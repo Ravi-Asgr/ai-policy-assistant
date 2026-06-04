@@ -1,19 +1,34 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: ai-assistant
+
   ai:
+    model:
+      chat: google-genai
+      embedding:
+        text: google-genai
+
     google:
       genai:
         api-key: ${GOOGLE_API_KEY}
+
         chat:
-          model: gemini-2.0-flash
           options:
-            temperature: 0
-            top-p: 1
-            num-ctx: 2048
+            model: gemma-4-31b-it
+            temperature: 0.0
+            top-p: 1.0
+            max-output-tokens: 2048
+
         embedding:
           api-key: ${GOOGLE_API_KEY}
-          model: text-embedding-001
+          text:
+            options:
+              model: text-embedding-004
+              task-type: RETRIEVAL_DOCUMENT
+
     vectorstore:
       qdrant:
         host: ${QDRANT_HOST}
@@ -22,5 +37,3 @@ spring:
         initialize-schema: true
         collection-name: policy_data
         use-tls: true
-server:
-  port: 8080
