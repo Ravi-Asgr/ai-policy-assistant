@@ -2,12 +2,18 @@ package com.example.assistant.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
+import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
+import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import org.stringtemplate.v4.ST;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -16,7 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class IngestionService {
@@ -29,32 +37,7 @@ public class IngestionService {
         this.vectorStore = vectorStore;
     }
 
-    public String ingestProjectDocument() {
-        List<String> fileList = new ArrayList<>();
-        logger.info("Internal document ingestion folder {}", FOLDER_PATH);
-        try {
-            Files.walk(Paths.get(FOLDER_PATH))
-                    .filter(p -> p.toString().endsWith(".pdf"))
-                    .forEach(p -> {
-                        String dept = p.getParent().getParent().getFileName().toString();
-                        String category = p.getParent().getFileName().toString();
-                        fileList.add(ingestPdf(p, dept, category,"v1"));
-                        System.gc();
-                    });
-        } catch (IOException e) {
-            logger.info("Error reading project documents at path: {}", FOLDER_PATH);
-            throw new RuntimeException(e);
-        }
-        return fileList.toString();
-    }
-
-    private String ingestPdf(Path path, String department, String policyCategory, String version) {
-        String fileName = path.getFileName().toString();
-        logger.info("Ingesting file: {} of department: {}, of category: {}", fileName, department, policyCategory);
-        return fileName;
-    }
-
-
+    /* Bulk ingest from folder structure: polies/{department}/{category}/filename.pdf */
     public String loadPdfsFromResources() {
         List<Object> fileList = new ArrayList<>();
 
@@ -115,9 +98,9 @@ public class IngestionService {
         }
     }
 
-
-    private Object ingestPdf(Resource resource, String dept, String category, String version) {
+    public Object ingestPdf(Resource resource, String dept, String category, String version) {
         try (InputStream inputStream = resource.getInputStream()) {
+            //try (InputStream inputStream = new BufferedInputStream(new FileInputStream())) {
 
             String fileName = resource.getFilename();
 
@@ -138,13 +121,37 @@ public class IngestionService {
              * 5. Store chunks into Qdrant
              */
 
+            //Step 1: Read PDF - 1 Document per page
+            PagePdfDocumentReader reader = new PagePdfDocumentReader(resource,
+                    PdfDocumentReaderConfig.builder().withPagesPerDocument(1).build());
+            List<Document> pages = reader.get();
+
+            //Step 2: Chunk into 512-token pieces
+            List<Document> chunks = TokenTextSplitter.builder().withChunkSize(512).build()
+                    .apply(pages);
+            //new TokenTextSplitter(512, 50, 5, 10000, true).apply(pages);
+
+            //Step 3: Enrich  metadata
+            List<Document> enriched = new ArrayList<>();
+            int chunk_index = 0;
+            for (Document chunk : chunks) {
+                Map<String, Object> meta = new HashMap<>(chunk.getMetadata());
+                meta.put("file_name", fileName);
+                meta.put("doc_type", "policy");
+                meta.put("department", dept);
+                meta.put("category", category);
+                meta.put("version", version);
+                meta.put("chunk_index", chunk_index++);
+                enriched.add(new Document(chunk.getText(), meta));
+            }
+
+            //Step 4: Save to Qdrant
+            vectorStore.add(enriched);
+
             return fileName;
 
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Failed to ingest PDF: " + resource.getFilename(),
-                    e
-            );
+            throw new RuntimeException("Failed to ingest PDF: " + resource.getFilename(), e);
         }
     }
 
