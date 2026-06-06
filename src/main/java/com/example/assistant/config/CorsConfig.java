@@ -16,7 +16,7 @@ public class CorsConfig {
         cfg.setAllowedOrigins(List.of("https://ravi-asgr.github.io"));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
-        cfg.setAllowCredentials(true); // only if you need cookies/auth
+        //cfg.setAllowCredentials(true); // only if you need cookies/auth
         UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
         src.registerCorsConfiguration("/**", cfg);
         return new CorsFilter(src);
