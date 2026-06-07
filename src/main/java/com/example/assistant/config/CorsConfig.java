@@ -16,9 +16,9 @@ public class CorsConfig {
         cfg.setAllowedOriginPatterns(List.of("https://ravi-asgr.github.io", "https://*.github.io"));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
-        cfg.setExposedHeaders(List.of("Authorization","Content-Type"));
-        cfg.setAllowCredentials(true);
-        cfg.setMaxAge(3600L);
+        //cfg.setExposedHeaders(List.of("Authorization","Content-Type"));
+        cfg.setAllowCredentials(false);
+        //cfg.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
         src.registerCorsConfiguration("/**", cfg);
