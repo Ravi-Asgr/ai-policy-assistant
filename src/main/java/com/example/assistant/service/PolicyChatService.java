@@ -9,6 +9,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,5 +103,58 @@ public class PolicyChatService {
                 "policy", "rule", "procedure", "eligible", "entitlement"
         );
         return policyKeyWords.stream().anyMatch(lower::contains);
+    }
+
+    public Flux<String> chatStream(String query, String department) {
+
+        //step 1: Decide if semantic search is needed
+        boolean needsPolicyContext = isPolicyQuestion(query);
+
+        String context = "";
+        List<String> sources = new ArrayList<>();
+
+        if(needsPolicyContext) {
+            logger.info("Policy question detected - performing semantic search");
+
+            String filter = department != null && !department.isBlank()
+                    ? String.format("doc_type == 'policy' && department == '%s'", department)
+                    : "doc_type == 'policy'";
+
+            List<Document> results = vectorStore.similaritySearch(
+                    SearchRequest.builder()
+                            .query(query)
+                            .topK(4)
+                            .filterExpression(filter)
+                            .similarityThreshold(0.65) //only include relevant chunks
+                            .build()
+            );
+
+            if (!results.isEmpty()) {
+                context = results.stream()
+                        .map(doc -> {
+                            String src = doc.getMetadata().get("file_name") + " (Page "
+                                    + doc.getMetadata().get("page_number") + ")";
+                            sources.add(src);
+                            return "[Source: " + src + "]\n" + doc.getText();
+                        })
+                        .collect(Collectors.joining("\n\n---\n\n"));
+            }
+        }
+
+        //Step 2: Build prompt - with or without context
+        String finalContext = context;
+        return chatClient.prompt()
+                .user(u -> {
+                    if (!finalContext.isBlank()) {
+                        u.text("Policy Context:\n{context}\n\nEmployee Question: {question}")
+                                .param("context", finalContext)
+                                .param("question", query);
+                    } else {
+                        u.text("{question}").param("question", query);
+                    }
+                })
+                .stream()
+                .content();
+        //return new com.example.assistant.model.ChatResponse(answer, sources, needsPolicyContext);
     }
 }

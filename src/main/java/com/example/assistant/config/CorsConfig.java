@@ -13,9 +13,10 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOriginPatterns(List.of("https://ravi-asgr.github.io", "https://*.github.io"));
+        cfg.setAllowedOriginPatterns(List.of("*"));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
+        cfg.setExposedHeaders(List.of("Content-Type", "Cache-Control")); //for SSE
         //cfg.setExposedHeaders(List.of("Authorization","Content-Type"));
         cfg.setAllowCredentials(false);
         //cfg.setMaxAge(3600L);

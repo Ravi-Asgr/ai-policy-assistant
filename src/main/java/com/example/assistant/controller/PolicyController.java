@@ -9,8 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/bot")
@@ -57,4 +59,14 @@ public class PolicyController {
         ChatResponse chat = policyChatService.chat(request.query(), request.department());
         return ResponseEntity.ok(chat);
     }
+
+    /*
+    Streaming chat endpoint - returns SSE stream of LM response
+     */
+    @GetMapping(value = "/streamchat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> chatStream(@RequestBody ChatRequest request) {
+        logger.info("Stream Chat or Policy query : {}", request.query());
+        return policyChatService.chatStream(request.query(), request.department());
+    }
+
 }
