@@ -3,7 +3,6 @@ package com.example.assistant.controller;
 import com.example.assistant.model.ChatRequest;
 import com.example.assistant.model.ChatResponse;
 import com.example.assistant.service.PolicyChatService;
-import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -47,6 +46,12 @@ public class PolicyController {
         String response = this.chatClient.prompt().user(question).call().content();
         logger.info("Gemini response: {}", response);
         return response;
+    }
+
+    @GetMapping(value = "/teststreammodel", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> testStreamModel(@RequestParam(name="q") String question) {
+        logger.info("Calling Streaming Gemini, question: {}", question);
+        return this.chatClient.prompt().user(question).stream().content();
     }
 
     /* LLS anawers directly or uses RAG
