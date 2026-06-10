@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
+import java.time.Duration;
+
 @RestController
 @RequestMapping("/bot")
 public class PolicyController {
@@ -54,7 +56,7 @@ public class PolicyController {
         return this.chatClient.prompt().user(question).stream().content();
     }
 
-    /* LLS anawers directly or uses RAG
+    /* LLM answers directly or uses RAG
     * Body: { "query": "How many sick leaves am I entitled to?", "department": "HR" }
     *
     * */
@@ -63,6 +65,12 @@ public class PolicyController {
         logger.info("Chat or Policy query : {}", request.query());
         ChatResponse chat = policyChatService.chat(request.query(), request.department());
         return ResponseEntity.ok(chat);
+    }
+
+    @GetMapping(value = "/testdummy", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> testDummy() {
+        return Flux.just("Hello ", "from ", "streaming ", "endpoint!")
+                .delayElements(Duration.ofMillis(900));
     }
 
     /*
