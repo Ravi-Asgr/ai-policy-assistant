@@ -50,10 +50,10 @@
     <dependencies>
 
         <!-- Spring Web -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+        </dependency>-->
 
         <!-- ✅ Google Gemini via Google AI Studio API Key - no Vertex/GCP -->
         <dependency>
