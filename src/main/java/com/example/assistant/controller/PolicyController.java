@@ -50,11 +50,27 @@ public class PolicyController {
         return response;
     }
 
-    @GetMapping(value = "/testdummy", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    /*@GetMapping(value = "/teststreammodel", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> testStreamModel(@RequestParam(name="q") String question) {
         logger.info("Calling Streaming Gemini, question: {}", question);
         return this.chatClient.prompt().user(question).stream().content();
+    }*/
+
+
+    @GetMapping(value = "/teststreammodel", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> testStreamModel(@RequestParam(name="q") String question) {
+        logger.info("Calling Streaming Gemma, question: {}", question);
+
+        return this.chatClient.prompt()
+                .user(question)
+                .stream()
+                .content()
+                .doOnSubscribe(s -> logger.info("Stream subscribed"))
+                .doOnNext(chunk -> logger.info("STREAM CHUNK [{} chars]: [{}]", chunk.length(), chunk))
+                .doOnComplete(() -> logger.info("Stream completed"))
+                .doOnError(error -> logger.error("Stream error", error));
     }
+
 
     /* LLM answers directly or uses RAG
     * Body: { "query": "How many sick leaves am I entitled to?", "department": "HR" }
@@ -67,7 +83,7 @@ public class PolicyController {
         return ResponseEntity.ok(chat);
     }
 
-    @GetMapping(value = "/teststreammodel", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/testdummy", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> testDummy() {
         logger.info("Test stream response");
         return Flux.just("Hello ", "from ", "streaming ", "endpoint!")
