@@ -5,12 +5,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 @Configuration
 public class CorsConfig {
-    @Bean
+
+    /* CORS for spring-boot-starter-web */
+    /*@Bean
     public CorsFilter corsFilter() {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOriginPatterns(List.of("*"));
@@ -24,5 +28,19 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
         src.registerCorsConfiguration("/**", cfg);
         return new CorsFilter(src);
+    }*/
+
+    /* CORS for spring-boot-starter-webflux */
+    @Bean
+    public WebMvcConfigurer corsFilter() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOriginPatterns("*")
+                        .allowedMethods("GET", "POST", "OPTIONS")
+                        .exposedHeaders("Content-Type", "Cache-Control", "X-Accel-Buffering");
+            }
+        };
     }
 }
