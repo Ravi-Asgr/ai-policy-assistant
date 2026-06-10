@@ -50,7 +50,7 @@ public class PolicyController {
         return response;
     }
 
-    @GetMapping(value = "/teststreammodel", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/testdummy", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> testStreamModel(@RequestParam(name="q") String question) {
         logger.info("Calling Streaming Gemini, question: {}", question);
         return this.chatClient.prompt().user(question).stream().content();
@@ -67,8 +67,9 @@ public class PolicyController {
         return ResponseEntity.ok(chat);
     }
 
-    @GetMapping(value = "/streamchat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/teststreammodel", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> testDummy() {
+        logger.info("Test stream response");
         return Flux.just("Hello ", "from ", "streaming ", "endpoint!")
                 .delayElements(Duration.ofMillis(900));
     }
@@ -76,7 +77,7 @@ public class PolicyController {
     /*
     Streaming chat endpoint - returns SSE stream of LM response
      */
-    @GetMapping(value = "/testdummy", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/streamchat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> chatStream(@RequestBody ChatRequest request) {
         logger.info("Stream Chat or Policy query : {}", request.query());
         return policyChatService.chatStream(request.query(), request.department());
