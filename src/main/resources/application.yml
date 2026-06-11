@@ -21,6 +21,7 @@ spring:
             temperature: 0.0
             top-p: 1.0
             max-output-tokens: 2048
+            stream: true
 
         embedding:
           api-key: ${GOOGLE_API_KEY}
