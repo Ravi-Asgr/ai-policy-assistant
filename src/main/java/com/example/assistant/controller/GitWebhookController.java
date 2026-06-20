@@ -59,9 +59,9 @@ public class GitWebhookController {
         }
 
         // Step 4: Validate PR state
-        if (null == prRecord.mergedAt()) {
-            logger.info("PR is not yet merged, skipping it.");
-            return ResponseEntity.ok("Ignoring non-merged PR");
+        if (null == prRecord) {
+            logger.info("PR is not yet in processable state, skipping it.");
+            return ResponseEntity.ok("Ignoring non-processable PR");
         }
 
         // Step 5: Index PR to vector store

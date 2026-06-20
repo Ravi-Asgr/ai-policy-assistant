@@ -121,7 +121,7 @@ public class GitWebhookService {
         try {
             logger.info("Parsing the string payload");
             JsonNode node = objectMapper.readTree(payload);
-            logger.info("Json node as string {}", node.asText());
+            logger.info("Json node as string {}", node.toPrettyString());
 
             // PR parent node
             JsonNode pullReqNode = node.hasNonNull("pull_request") ? node.get("pull_request") : null;
