@@ -53,6 +53,9 @@ public class GitWebhookService {
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
 
+    @Value("${github.token}")
+    private String githubToken;
+
     public GitWebhookService(RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper,
                              VectorStore vectorStore, ChatModel chatModel) {
         this.restTemplate = restTemplateBuilder.build();
@@ -121,7 +124,7 @@ public class GitWebhookService {
         try {
             logger.info("Parsing the string payload");
             JsonNode node = objectMapper.readTree(payload);
-            logger.info("Json node as string {}", node.toPrettyString());
+            //logger.info("Json node as string {}", node.toPrettyString());
 
             // PR parent node
             JsonNode pullReqNode = node.hasNonNull("pull_request") ? node.get("pull_request") : null;
@@ -218,9 +221,8 @@ public class GitWebhookService {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.USER_AGENT, "rest-template-client");
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        /*if (githubToken != null && !githubToken.isBlank()) {
-            headers.set(HttpHeaders.AUTHORIZATION, "token " + githubToken);
-        }*/
+        headers.setBearerAuth(githubToken);
+
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         Set<String> filenames = new LinkedHashSet<>();
