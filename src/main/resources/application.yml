@@ -17,7 +17,7 @@ spring:
 
         chat:
           options:
-            model: gemma-4-31b-it
+            model: gemini-3.1-flash-lite
             temperature: 0.0
             top-p: 1.0
             max-output-tokens: 2048
@@ -27,8 +27,9 @@ spring:
           api-key: ${GOOGLE_API_KEY}
           text:
             options:
-              model: text-embedding-004
+              model: gemini-embedding-2
               task-type: RETRIEVAL_DOCUMENT
+              dimensions: 1536
 
     vectorstore:
       qdrant:
@@ -36,5 +37,5 @@ spring:
         port: 6334
         api-key: ${QDRANT_API_KEY}
         initialize-schema: true
-        collection-name: policy_data
+        collection-name: pr_data
         use-tls: true
