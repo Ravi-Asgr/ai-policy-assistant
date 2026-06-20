@@ -73,7 +73,7 @@ public class GitWebhookService {
 
     public boolean isValidSignature(String payload, String signHeader) {
 
-        if (signHeader == null || !signHeader.startsWith("sha=")) {
+        if (signHeader == null || !signHeader.startsWith("sha256=")) {
             logger.error("Problem with signed value (from header) {}", signHeader);
             return false;
         }
