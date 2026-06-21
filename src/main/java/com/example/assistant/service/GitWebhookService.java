@@ -551,10 +551,18 @@ public class GitWebhookService {
             found = vectorStore.similaritySearch(searchRequest.build());
         }
 
-        // 5. Aggregate to PR-level rows
+        // 5. Default response when semantic search does not yield results
+        if (found.isEmpty()) {
+            return """
+                    I'm sorry, but the requested information is not available in my current database. 
+                    I am configured to only answer questions using verified source documents, and no matching records were found.
+                    """;
+        }
+
+        // 6. Aggregate to PR-level rows
         List<SearchResultRow> rows = aggregateToRows(found);
 
-        // 6. Call Gemini to format results into a strict markdown table or list
+        // 7. Call Gemini to format results into a strict markdown table or list
         String formatted = callGeminiForFormatting(userQuery, rows);
 
         // 7. Return formatted string (markdown)

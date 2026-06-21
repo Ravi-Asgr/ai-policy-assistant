@@ -1,6 +1,8 @@
 package com.example.assistant.config;
 
-/*import org.springframework.context.annotation.Bean;
+
+// Web CORS
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,8 +28,11 @@ public class CorsConfig {
         src.registerCorsConfiguration("/**", cfg);
         return new CorsFilter(src);
     }
-}*/
+}
 
+/*
+
+// Webflux CORS
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -53,4 +58,6 @@ public class CorsConfig {
         src.registerCorsConfiguration("/**", cfg);
         return new CorsWebFilter(src);
     }
+
 }
+ */
