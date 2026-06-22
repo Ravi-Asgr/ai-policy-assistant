@@ -1,6 +1,7 @@
 package com.example.assistant.controller;
 
 import com.example.assistant.model.PrRecord;
+import com.example.assistant.model.PrResponse;
 import com.example.assistant.model.SearchRequest;
 import com.example.assistant.model.SearchResultRow;
 import com.example.assistant.service.GitWebhookService;
@@ -84,8 +85,8 @@ public class GitWebhookController {
      * Search endpoint for user prompts. Accepts metadata filters and optional semantic query.
      */
     @PostMapping("/search")
-    public ResponseEntity<String> search(@RequestBody String query) {
-        String llmResponse = gitWebhookService.semanticSearch(query);
+    public ResponseEntity<PrResponse> search(@RequestBody String query) {
+        PrResponse llmResponse = gitWebhookService.semanticSearch(query);
         return ResponseEntity.ok(llmResponse);
     }
 

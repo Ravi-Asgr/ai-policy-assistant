@@ -511,7 +511,7 @@ public class GitWebhookService {
         return combinedExpression;
     }
 
-    public String semanticSearch(String userQuery) {
+    public PrResponse semanticSearch(String userQuery) {
         // 1. Ask Gemini to extract JSON filters
         String extractionJson = callGeminiForExtraction(userQuery);
 
@@ -553,20 +553,26 @@ public class GitWebhookService {
 
         // 5. Default response when semantic search does not yield results
         if (found.isEmpty()) {
-            return """
+            String message = """
                     I'm sorry, but the requested information is not available in my current database. 
                     I am configured to only answer questions using verified source documents, and no matching records were found.
                     """;
+            PrResponse prResponse = new PrResponse();
+            prResponse.setMessage(message);
+            return prResponse;
         }
 
         // 6. Aggregate to PR-level rows
         List<SearchResultRow> rows = aggregateToRows(found);
 
         // 7. Call Gemini to format results into a strict markdown table or list
-        String formatted = callGeminiForFormatting(userQuery, rows);
+        // this method was added for testing, now directly response to UI which does the formatting
+        //String formatted = callGeminiForFormatting(userQuery, rows);
 
         // 7. Return formatted string (markdown)
-        return formatted;
+        PrResponse prResponse = new PrResponse();
+        prResponse.setSearchResultRow(rows);
+        return prResponse;
 
     }
 
@@ -727,18 +733,6 @@ public class GitWebhookService {
         String llmResponse = chatClient.prompt().system(system).user(user).call().content();
         logger.info("Final LLM response {}", llmResponse);
         return llmResponse;
-        /*ChatCompletionRequest req = ChatCompletionRequest.builder()
-                .systemMessage(ChatMessage.ofSystem(system))
-                .userMessage(ChatMessage.ofUser(user))
-                .build();
-
-        try {
-            var resp = chatClient.chat(req);
-            String content = resp.getChoices().get(0).getMessage().getContent();
-            return content == null ? fallbackMarkdownTable(rows) : content.trim();
-        } catch (Exception ex) {
-            return fallbackMarkdownTable(rows);
-        }*/
     }
 
 
