@@ -584,7 +584,9 @@ public class GitWebhookService {
         String system = """
                 You are a JSON extractor. Today's date is %s.
                 Return ONLY a single JSON object with keys: repo, from, to, filenames, author, semanticQuery.
-                Use ISO dates YYYY-MM-DD or full ISO for from and to.
+                For the 'from' and 'to' fields, use the ISO 8601 date and time format (YYYY-MM-DDTHH:mm:ssZ).
+                The 'from' date must always end exactly with the time T00:00:00Z.
+                The 'to' date must always end exactly with the time T23:59:59Z.
                 If a field is absent in the query, set it to null or an empty array.
                 Do not include any explanation, markdown, commentary, or code block. Return raw JSON only.
                 """.formatted(today);
